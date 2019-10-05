@@ -1,0 +1,27 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: silver;
+}
+
+.enemy {
+    position: absolute;
+}
+
+.square {
+    color: white;
+}
+
+.square--blink {
+    background-color: red;
+    transition: 1s;
+}
+
+.selector {
+    position: absolute;
+}
