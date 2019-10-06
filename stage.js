@@ -20,8 +20,10 @@ class Score {
 
     update( addThis ) {
         this.score += addThis;
-        this.scoreArea.innerText = this.score;
-        console.log( this.scoreArea );
+        this.scoreArea.innerHTML =
+            `
+        <h1>${this.score}</h1>
+        `;
     }
 }
 
@@ -107,9 +109,7 @@ class Grid {
 
     paint( input ) {
         this.detectSelected( input );
-
         this.selected[1].classList.add( 'square--blink' );
-
         this.unpaint( this.selected[1] );
 
     }
@@ -188,6 +188,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //  KEYPRESSES
     document.addEventListener( 'keydown', ( event ) => {
+        console.log( document.querySelectorAll( '.square--blink' ).length );
         switch ( event.code ) {
             case 'ArrowLeft':
                 selector.move( 'l' );
