@@ -1,4 +1,10 @@
+const theParent = document.body;
 const TILE_SIZE = 64;
+const GRIDW = 10;
+const GRIDH = 10;
+const enemies = [];
+
+
 
 class Score {
     constructor( score ) {
@@ -51,15 +57,19 @@ class Square {
 
 
 class Enemy {
-    constructor( csize, bgcolor, theClassname ) {
+    constructor( csize, bgcolor, theClassname, id ) {
         this.csize = csize;
         this.bgcolor = bgcolor;
         this.theClassname = theClassname;
+        this.id = id;
     }
 
     render() {
         this.enemy = document.createElement( 'div' );
         this.enemy.className = `${this.theClassname}`;
+        this.enemy.id = `${this.id}`;
+        this.enemy.style.left = `${Math.floor( Math.random() * GRIDW ) * TILE_SIZE}px`;
+        this.enemy.style.top = `${Math.floor( Math.random() * GRIDH ) * TILE_SIZE}px`;
         this.enemy.style.width = `${this.csize * TILE_SIZE}px`;
         this.enemy.style.height = `${this.csize * TILE_SIZE}px`;
         this.enemy.style.backgroundColor = `${this.bgcolor}`;
@@ -69,6 +79,12 @@ class Enemy {
         //  CHANGE BELOW MAYBE
         this.render();
         parent.appendChild( this.enemy );
+    }
+
+    unmount( parent ) {
+        parent.removeChild( this.enemy );
+        enemies.splice( this.id, 1 );
+        createGrid.spawnNew();
     }
 }
 
@@ -100,11 +116,30 @@ class Grid {
         const x = document.querySelector( input ).offsetLeft;
         const y = document.querySelector( input ).offsetTop;
         this.selected = document.elementsFromPoint( x, y );
-        this.selected.forEach( elem => {
+        /* this.selected.forEach( elem => {
             if ( elem.className === 'enemy' ) {
                 this.scoreArea.update( 1 );
+                enemies[0].unmount( theParent );
+                console.log( this.selected );
+
+            }
+        } ) */
+
+        const selectedEnemy = this.selected.find( elem => {
+            if ( elem.className === 'enemy' ) {
+                this.scoreArea.update( 1 );
+                enemies[0].unmount( theParent );
+            } else {
+                return false;
             }
         } )
+
+    }
+
+    spawnNew() {
+        const newEnemy = new Enemy( 1, 'purple', 'enemy', 0 );
+        enemies.push( newEnemy );
+        enemies[0].mount( theParent );
     }
 
     paint( input ) {
@@ -163,28 +198,29 @@ class Selector extends Square {
     update() {
         this.square.style.left = `${this.x * TILE_SIZE}px`;
         this.square.style.top = `${this.y * TILE_SIZE}px`;
+
+        console.log( this.square.style.left = `${this.x * TILE_SIZE}px` );
+        console.log( this.square.style.top = `${this.y * TILE_SIZE}px` );
     }
 }
 
 
-
+const scoreArea = new Score( 1 );
+const createGrid = new Grid( GRIDW, GRIDH, TILE_SIZE, scoreArea );
 
 
 document.addEventListener( 'DOMContentLoaded', () => {
-    const theParent = document.body;
 
-    const scoreArea = new Score( 1 );
-
-    const createGrid = new Grid( 10, 10, TILE_SIZE, scoreArea );
     createGrid.mount();
     scoreArea.mount( theParent );
 
-    const theEnemy = new Enemy( 1, 'green', 'enemy' );
-    theEnemy.mount( theParent );
+    //  Push multiple enemies in array
+    enemies.push( new Enemy( 1, 'green', 'enemy', 0 ) );
+    enemies[0].mount( theParent );
+    //  end
 
     const selector = new Selector( 0, 0, TILE_SIZE, 'purple', 'selector' );
     selector.mountExtend( theParent );
-
 
     //  KEYPRESSES
     document.addEventListener( 'keydown', ( event ) => {
